@@ -12,19 +12,24 @@ const getUsers = async (req, res, next) => {
 };
 
 const registerUser = async (req, res, next) => {
+  const { userName, email, password, role } = req.body;
   try {
     const newUser = new User({
-      userName: req.body.userName,
-      email: req.body.email,
-      password: req.body.password,
-      role: req.body.role,
+      userName,
+      email,
+      password,
+      role,
     });
     const userExist = await User.findOne({ email: req.body.email });
-    if (!userExist) {
+    if (userExist) {
       return res.status(409).json("This user already exists");
     }
     const userSaved = await newUser.save();
-    return res.status(200).json(userSaved);
+    if (userSaved) {
+      return res
+        .status(201)
+        .json({ message: "user registered correctly", userSaved });
+    }
   } catch (error) {
     return res.status(400).json("Error when registering the user");
   }
