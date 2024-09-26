@@ -28,18 +28,23 @@ const createRestaurant = async (req, res, next) => {
       req.body;
     if (
       !name ||
-      location ||
-      owner ||
-      category ||
-      img ||
-      telephone ||
-      schedule
+      !location ||
+      !owner ||
+      !category ||
+      !img ||
+      !telephone ||
+      !schedule
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
+    if (!schedule.opening || !schedule.closing) {
+      return res
+        .status(400)
+        .json({ message: "Schedule must include opening and closing times" });
+    }
     const user = await User.findById(owner);
     if (!user) {
-      return res.status(400).json("owner not found");
+      return res.status(404).json("owner not found");
     }
     if (user.role !== "admin") {
       return res
@@ -56,11 +61,14 @@ const createRestaurant = async (req, res, next) => {
       schedule,
     });
     const restaurantSaved = await newRestaurant.save();
-    return res
-      .status(200)
-      .json({ message: "Successfully created restaurant", restaurantSaved });
+    return res.status(201).json({
+      message: "Successfully created restaurant",
+      restaurant: restaurantSaved,
+    });
   } catch (error) {
-    return res.status(400).json("Error creating restaurant");
+    return res
+      .status(400)
+      .json({ message: "Error creating restaurant", error: error.message });
   }
 };
 
