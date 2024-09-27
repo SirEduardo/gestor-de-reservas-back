@@ -1,3 +1,4 @@
+const { deleteFiles } = require("../../utils/deleteFiles");
 const Restaurant = require("../models/restaurant");
 const User = require("../models/users");
 
@@ -19,6 +20,21 @@ const getRestuarantById = async (req, res, next) => {
     return res.status(200).json(restaurant);
   } catch (error) {
     return res.status(400).json("Error while picking up restaurants ");
+  }
+};
+const getRestaurantByName = async (req, res, next) => {
+  try {
+    const { name } = req.query;
+    if (!name) {
+      const allRestaurants = await Restaurant.find({});
+      return res.status(200).json(allRestaurants);
+    }
+    const restaurants = await Restaurant.find({
+      name: { $regex: name, $options: "i" },
+    });
+    return res.status(200).json(restaurants);
+  } catch (error) {
+    return res.status(500).json("Error trying to find restaurants");
   }
 };
 
@@ -90,9 +106,11 @@ const deleteRestaurant = async (req, res, next) => {
         .json("User not authorized to delet this restaurant");
     }
     const deletedRestaurant = await Restaurant.findByIdAndDelete(id);
-    return res
-      .status(200)
-      .json({ message: "Restaurant deleted", deleteRestaurant });
+    deleteFiles(deletedRestaurant.img);
+    return res.status(200).json({
+      message: "Restaurant deleted",
+      deletedRestaurant: deletedRestaurant,
+    });
   } catch (error) {}
 };
 
@@ -101,4 +119,5 @@ module.exports = {
   getRestuarantById,
   createRestaurant,
   deleteRestaurant,
+  getRestaurantByName,
 };
