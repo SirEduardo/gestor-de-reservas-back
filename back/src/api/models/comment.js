@@ -9,7 +9,7 @@ const commmentSchema = new Schema(
       ref: "restaurants",
       required: true,
     },
-    comment: { type: String, required: true, trim: true },
+    text: { type: String, required: true, trim: true },
     rating: { type: Number, rqeuired: true, min: 0, max: 5 },
     craetion_date: { type: Date, default: Date.now },
   },
