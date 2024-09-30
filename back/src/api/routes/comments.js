@@ -1,3 +1,4 @@
+const { isAuth } = require("../../middlewares/auth");
 const {
   getComments,
   createComments,
@@ -7,7 +8,7 @@ const {
 const commentsRoutes = require("express").Router();
 
 commentsRoutes.get("/", getComments);
-commentsRoutes.post("/", createComments);
+commentsRoutes.post("/:restaurant", [isAuth], createComments);
 commentsRoutes.delete("/:id", deleteComments);
 
 module.exports = commentsRoutes;
