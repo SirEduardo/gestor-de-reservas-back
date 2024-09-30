@@ -13,7 +13,7 @@ const getRestuarants = async (req, res, next) => {
 const getRestuarantById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const restaurant = await Restaurant.findById(id);
+    const restaurant = await Restaurant.findById(id).populate("comments");
     if (!restaurant) {
       return res.status(404).json("Restaurant not found");
     }
@@ -111,7 +111,33 @@ const deleteRestaurant = async (req, res, next) => {
       message: "Restaurant deleted",
       deletedRestaurant: deletedRestaurant,
     });
-  } catch (error) {}
+  } catch (error) {
+    return res
+      .sttus(500)
+      .json({ message: "Failed trying to delete restaurant", error });
+  }
+};
+
+const updateRestaurant = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { name, location, owner, category, img, telephone, schedule } =
+      req.body;
+    const updatedRestaurant = await Restaurant.findByIdAndUpdate(
+      id,
+      { name, location, owner, category, img, telephone, schedule },
+      { new: true }
+    );
+    if (!updatedRestaurant) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
+    return res.status(200).json({
+      message: "Restaurant updated successfuly",
+      updatedRestaurant: updatedRestaurant,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: "Update failed", error });
+  }
 };
 
 module.exports = {
@@ -120,4 +146,5 @@ module.exports = {
   createRestaurant,
   deleteRestaurant,
   getRestaurantByName,
+  updateRestaurant,
 };
