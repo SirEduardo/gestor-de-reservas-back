@@ -5,7 +5,7 @@ const menuSchema = new Schema(
   {
     restaurant: {
       type: Schema.Types.ObjectId,
-      ref: "restaurants",
+      ref: "restaurant",
       required: true,
     },
     description: { type: String, required: true, trim: true },
@@ -17,5 +17,5 @@ const menuSchema = new Schema(
   }
 );
 
-const Menu = mongoose.model("menus", menuSchema, "menus");
+const Menu = mongoose.model("menu", menuSchema, "menus");
 module.exports = Menu;
