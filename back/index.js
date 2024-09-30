@@ -7,6 +7,7 @@ const userRoutes = require("./src/api/routes/users");
 const restaurantRoutes = require("./src/api/routes/restaurant");
 const reservationRoutes = require("./src/api/routes/reservations");
 const commentsRoutes = require("./src/api/routes/comments");
+const menusRoutes = require("./src/api/routes/menus");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/restaurants", restaurantRoutes);
 app.use("/api/v1/reservations", reservationRoutes);
 app.use("/api/v1/comments", commentsRoutes);
+app.use("/api/v1/menus", menusRoutes);
 
 app.use("*", (req, res) => {
   return res.status(404).json("Route not found");
