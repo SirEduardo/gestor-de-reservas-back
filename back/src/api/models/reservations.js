@@ -3,10 +3,10 @@ const Schema = mongoose.Schema;
 
 const reservationSchema = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, ref: "users", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "user", required: true },
     restaurant: {
       type: Schema.Types.ObjectId,
-      ref: "restaurants",
+      ref: "restaurant",
       required: true,
     },
     booking_date: { type: Date, required: true },
@@ -25,7 +25,7 @@ const reservationSchema = new Schema(
 );
 
 const Reservation = mongoose.model(
-  "reservations",
+  "reservation",
   reservationSchema,
   "reservations"
 );
