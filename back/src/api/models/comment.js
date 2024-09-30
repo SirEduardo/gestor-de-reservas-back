@@ -3,20 +3,20 @@ const Schema = mongoose.Schema;
 
 const commmentSchema = new Schema(
   {
-    user: { trype: Schema.Types.ObjectId, ref: "users", required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "user", required: true },
     restaurant: {
-      type: Schema.Types.ObjectId,
-      ref: "restaurants",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "restaurant",
       required: true,
     },
     text: { type: String, required: true, trim: true },
-    rating: { type: Number, rqeuired: true, min: 0, max: 5 },
-    craetion_date: { type: Date, default: Date.now },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    creation_date: { type: Date, default: Date.now },
   },
   {
-    collection: "comment",
+    collection: "comments",
   }
 );
 
-const Comment = mongoose.model("comments", commmentSchema, "comments");
+const Comment = mongoose.model("comment", commmentSchema, "comments");
 module.exports = Comment;
