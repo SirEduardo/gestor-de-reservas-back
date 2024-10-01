@@ -17,7 +17,13 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173", // Asegúrate de que el puerto es el correcto
+    methods: "GET,POST,PUT,DELETE",
+    credentials: true,
+  })
+);
 app.options("*", cors());
 app.use(express.json());
 
