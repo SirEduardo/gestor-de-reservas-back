@@ -19,7 +19,6 @@ cloudinary.config({
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Asegúrate de que el puerto es el correcto
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
