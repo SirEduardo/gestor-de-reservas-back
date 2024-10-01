@@ -14,6 +14,7 @@ const commmentSchema = new Schema(
     creation_date: { type: Date, default: Date.now },
   },
   {
+    timestamps: true,
     collection: "comments",
   }
 );
