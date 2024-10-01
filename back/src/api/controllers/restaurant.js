@@ -2,7 +2,7 @@ const { deleteFiles } = require("../../utils/deleteFiles");
 const Restaurant = require("../models/restaurant");
 const User = require("../models/users");
 
-const getRestuarants = async (req, res, next) => {
+const getRestaurants = async (req, res, next) => {
   try {
     const restaurants = await Restaurant.find();
     return res.status(200).json(restaurants);
@@ -10,7 +10,7 @@ const getRestuarants = async (req, res, next) => {
     return res.status(404).json("No restaurants found");
   }
 };
-const getRestuarantById = async (req, res, next) => {
+const getRestaurantById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const restaurant = await Restaurant.findById(id).populate("comments");
@@ -25,16 +25,26 @@ const getRestuarantById = async (req, res, next) => {
 const getRestaurantByName = async (req, res, next) => {
   try {
     const { name } = req.query;
-    if (!name) {
+
+    if (!name || name.trim() === "") {
       const allRestaurants = await Restaurant.find({});
       return res.status(200).json(allRestaurants);
     }
+
     const restaurants = await Restaurant.find({
       name: { $regex: name, $options: "i" },
     });
+
+    if (restaurants.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No se encontraron restaurantes." });
+    }
+
     return res.status(200).json(restaurants);
   } catch (error) {
-    return res.status(500).json("Error trying to find restaurants");
+    console.error("Error intentando encontrar restaurantes:", error);
+    return res.status(500).json("Error intentando encontrar restaurantes");
   }
 };
 
@@ -141,8 +151,8 @@ const updateRestaurant = async (req, res, next) => {
 };
 
 module.exports = {
-  getRestuarants,
-  getRestuarantById,
+  getRestaurants,
+  getRestaurantById,
   createRestaurant,
   deleteRestaurant,
   getRestaurantByName,
