@@ -3,7 +3,16 @@ const Restaurant = require("../models/restaurant");
 
 const getComments = async (req, res, next) => {
   try {
-    const comments = await Comment.find();
+    const { id } = req.params;
+    const comments = await Comment.find({ restaurant: id }).populate(
+      "user",
+      "userName"
+    );
+    if (comments.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No comments found for this restaurant" });
+    }
     return res.status(200).json(comments);
   } catch (error) {
     return res.status(404).json("Comments not found");
@@ -12,9 +21,11 @@ const getComments = async (req, res, next) => {
 
 const createComments = async (req, res, next) => {
   try {
-    const { restaurant } = req.params;
+    const { restaurant } = req.body;
     const { text, rating } = req.body;
     const user = req.user._id;
+    console.log("ID del restaurante:", restaurant);
+    console.log("Datos recibidos:", { text, rating, user });
 
     if (rating < 1 || rating > 5) {
       return res
@@ -24,6 +35,10 @@ const createComments = async (req, res, next) => {
     if (!text || !rating || typeof rating !== "number") {
       return res.status(400).json({ message: "Invalid input data" });
     }
+    const restaurantDoc = await Restaurant.findById(restaurant);
+    if (!restaurantDoc) {
+      return res.status(404).json({ message: "Restaurant not found" });
+    }
     const newComment = new Comment({
       user,
       restaurant,
@@ -31,19 +46,21 @@ const createComments = async (req, res, next) => {
       rating,
     });
     const commentSaved = await newComment.save();
-    const restaurantDoc = await Restaurant.findById(restaurant);
-    if (!restaurantDoc) {
-      return res.status(404).json({ message: "Restaurant not found" });
-    }
+
     restaurantDoc.comments.push(commentSaved._id);
     restaurantDoc.rating_number += 1;
-    restaurantDoc.average_rating =
-      (restaurantDoc.average_rating * (restaurantDoc.rating_number - 1) +
-        rating) /
-      restaurantDoc.rating_number;
+    if (restaurantDoc.rating_number > 0) {
+      restaurantDoc.average_rating =
+        (restaurantDoc.average_rating * (restaurantDoc.rating_number - 1) +
+          rating) /
+        restaurantDoc.rating_number;
+    } else {
+      restaurantDoc.average_rating = rating;
+    }
     await restaurantDoc.save();
     return res.status(201).json({ message: "Comment created", commentSaved });
   } catch (error) {
+    console.error("Error al crear el comentario:", error);
     return res.status(500).json({ message: "Failed to create comment", error });
   }
 };
