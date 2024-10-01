@@ -7,8 +7,8 @@ const {
 
 const commentsRoutes = require("express").Router();
 
-commentsRoutes.get("/", getComments);
-commentsRoutes.post("/:restaurant", [isAuth], createComments);
-commentsRoutes.delete("/:id", deleteComments);
+commentsRoutes.get("/:id", getComments);
+commentsRoutes.post("/:id", [isAuth], createComments);
+commentsRoutes.delete("/:id", [isAuth], deleteComments);
 
 module.exports = commentsRoutes;
