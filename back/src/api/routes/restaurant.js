@@ -1,7 +1,7 @@
 const { uploadRestaurants } = require("../../middlewares/file");
 const {
-  getRestuarants,
-  getRestuarantById,
+  getRestaurants,
+  getRestaurantById,
   createRestaurant,
   deleteRestaurant,
   getRestaurantByName,
@@ -10,8 +10,8 @@ const {
 
 const restaurantRoutes = require("express").Router();
 
-restaurantRoutes.get("/", getRestuarants);
-restaurantRoutes.get("/:id", getRestuarantById);
+restaurantRoutes.get("/", getRestaurants);
+restaurantRoutes.get("/:id", getRestaurantById);
 restaurantRoutes.get("/search", getRestaurantByName);
 restaurantRoutes.post("/", uploadRestaurants.single("img"), createRestaurant);
 restaurantRoutes.delete("/:id", deleteRestaurant);
