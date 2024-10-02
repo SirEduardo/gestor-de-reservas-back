@@ -17,12 +17,7 @@ cloudinary.config({
   api_secret: process.env.API_SECRET,
 });
 
-app.use(
-  cors({
-    methods: "GET,POST,PUT,DELETE",
-    credentials: true,
-  })
-);
+app.use(cors());
 app.options("*", cors());
 app.use(express.json());
 
