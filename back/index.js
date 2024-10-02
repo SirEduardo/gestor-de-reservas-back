@@ -37,7 +37,6 @@ app.use("*", (req, res) => {
   return res.status(404).json("Route not found");
 });
 
-//app.listen(3000, () => {
-//console.log("Running in http://localhost:3000");
-//});
-module.exports = app;
+app.listen(3000, () => {
+  console.log("Running in http://localhost:3000");
+});
