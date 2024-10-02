@@ -16,8 +16,11 @@ cloudinary.config({
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
 });
-
-app.use(cors());
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.options("*", cors());
 app.use(express.json());
 
