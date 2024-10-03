@@ -13,6 +13,7 @@ const userSchema = new Schema(
       enum: ["admin", "client"],
       default: "client",
     },
+    restaurant: [{ type: mongoose.Schema.Types.ObjectId, ref: "restaurant" }],
     reservations: [
       { type: mongoose.Schema.Types.ObjectId, ref: "reservation" },
     ],
