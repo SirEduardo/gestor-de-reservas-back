@@ -10,12 +10,17 @@ const isAuth = async (req, res, next) => {
     const parsedtoken = token.replace("Bearer ", "");
     const decodedtoken = verifyToken(parsedtoken);
 
-    if (!decodedtoken.id) {
+    if (!decodedtoken || !decodedtoken.id) {
       return res.status(401).json({ message: "Invalid token" });
     }
 
     const user = await User.findById(decodedtoken.id);
-    if (user.role === "admin" || "client") {
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.role === "admin" || user.role === "client") {
       user.password = undefined;
       req.user = user;
       next();
