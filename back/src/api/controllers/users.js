@@ -2,12 +2,13 @@ const { generateToken } = require("../../utils/token");
 const User = require("../models/users");
 const bcrypt = require("bcrypt");
 
-const getUsers = async (req, res, next) => {
+const getUser = async (req, res, next) => {
   try {
-    const users = await User.find();
+    const userId = req.user.id;
+    const users = await User.findById(userId).populate("restaurant");
     return res.status(200).json(users);
   } catch (error) {
-    return res.status(400).json("Error when collecting users");
+    return res.status(404).json("User not found");
   }
 };
 
@@ -37,7 +38,9 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const user = await User.findOne({ email: req.body.email }).populate(
+      "restaurant"
+    );
     if (!user) {
       return res.status(404).json("User not found");
     }
@@ -52,4 +55,4 @@ const loginUser = async (req, res, next) => {
   }
 };
 
-module.exports = { getUsers, registerUser, loginUser };
+module.exports = { getUser, registerUser, loginUser };
