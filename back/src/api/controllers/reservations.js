@@ -8,8 +8,8 @@ const createReservation = async (req, res, next) => {
     if ((!restaurant, !booking_date, !time, !n_persons)) {
       return res.status(400).json("All fields are required");
     }
-    const restaurantExists = await Restaurant.findById(restaurant);
-    if (!restaurantExists) {
+    const restaurantDoc = await Restaurant.findById(restaurant);
+    if (!restaurantDoc) {
       return res.status(400).json("This restaurant does not exist");
     }
     const newReservation = new Reservation({
@@ -22,9 +22,12 @@ const createReservation = async (req, res, next) => {
     });
 
     const reservationSaved = await newReservation.save();
+
+    restaurantDoc.reservations.push(reservationSaved._id);
+    await restaurantDoc.save();
     return res.status(200).json({
       message: "Reserve successfully created",
-      reservationSaved: reservationSaved,
+      reservationSaved,
     });
   } catch (error) {
     return res.status(400).json(500).json("Server error");
