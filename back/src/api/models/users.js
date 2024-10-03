@@ -13,6 +13,9 @@ const userSchema = new Schema(
       enum: ["admin", "client"],
       default: "client",
     },
+    reservations: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "reservation" },
+    ],
     creation_date: { type: Date, default: Date.now },
   },
   {
