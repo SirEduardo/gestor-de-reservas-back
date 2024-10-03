@@ -82,6 +82,8 @@ const createRestaurant = async (req, res, next) => {
       closing,
     });
     const restaurantSaved = await newRestaurant.save();
+    user.restaurant.push(restaurantSaved._id);
+    await user.save();
     return res.status(201).json({
       message: "Successfully created restaurant",
       restaurant: restaurantSaved,
