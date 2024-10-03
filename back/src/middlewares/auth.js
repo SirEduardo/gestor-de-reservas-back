@@ -15,7 +15,7 @@ const isAuth = async (req, res, next) => {
     }
 
     const user = await User.findById(decodedtoken.id);
-    if (user.role === "admin") {
+    if (user.role === "admin" || "client") {
       user.password = undefined;
       req.user = user;
       next();
