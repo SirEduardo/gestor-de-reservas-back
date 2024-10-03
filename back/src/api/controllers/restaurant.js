@@ -50,32 +50,26 @@ const getRestaurantByName = async (req, res, next) => {
 
 const createRestaurant = async (req, res, next) => {
   try {
-    const { name, location, owner, category, img, telephone, schedule } =
+    const { name, location, owner, category, telephone, opening, closing } =
       req.body;
     if (
       !name ||
       !location ||
       !owner ||
       !category ||
-      !img ||
       !telephone ||
-      !schedule
+      !opening ||
+      !closing
     ) {
       return res.status(400).json({ message: "All fields are required" });
     }
-    if (!schedule.opening || !schedule.closing) {
-      return res
-        .status(400)
-        .json({ message: "Schedule must include opening and closing times" });
+    if (!req.file) {
+      return res.status(400).json({ message: "Image is required" });
     }
+    const img = req.file.path;
     const user = await User.findById(owner);
     if (!user) {
       return res.status(404).json("owner not found");
-    }
-    if (user.role !== "admin") {
-      return res
-        .status(403)
-        .json("Only users with admin role can create restaurants");
     }
     const newRestaurant = new Restaurant({
       name,
@@ -84,7 +78,8 @@ const createRestaurant = async (req, res, next) => {
       category,
       img,
       telephone,
-      schedule,
+      opening,
+      closing,
     });
     const restaurantSaved = await newRestaurant.save();
     return res.status(201).json({
@@ -131,11 +126,19 @@ const deleteRestaurant = async (req, res, next) => {
 const updateRestaurant = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, location, owner, category, img, telephone, schedule } =
-      req.body;
+    const {
+      name,
+      location,
+      owner,
+      category,
+      img,
+      telephone,
+      opening,
+      closing,
+    } = req.body;
     const updatedRestaurant = await Restaurant.findByIdAndUpdate(
       id,
-      { name, location, owner, category, img, telephone, schedule },
+      { name, location, owner, category, img, telephone, opening, closing },
       { new: true }
     );
     if (!updatedRestaurant) {
