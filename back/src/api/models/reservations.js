@@ -14,7 +14,7 @@ const reservationSchema = new Schema(
     n_persons: { type: Number, required: true },
     state: {
       type: String,
-      enum: ["pending", "confirmed", "canceled"],
+      enum: ["pending", "confirmed", "cancelled"],
       default: "pending",
     },
     creation_date: { type: Date, default: Date.now },
