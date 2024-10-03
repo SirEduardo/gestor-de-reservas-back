@@ -14,7 +14,7 @@ reservationRoutes.get(
   [isAuth],
   getReservationsByRestaurant
 );
-reservationRoutes.post("/", [isAuth], createReservation);
+reservationRoutes.post("/:id", [isAuth], createReservation);
 reservationRoutes.put("/:id/cancel", [isAuth], cancelReservation);
 
 module.exports = reservationRoutes;
