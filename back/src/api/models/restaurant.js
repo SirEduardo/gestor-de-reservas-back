@@ -5,7 +5,7 @@ const restaurantSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     location: { type: String, required: true, trim: true },
-    owner: { type: Schema.Types.ObjectId, ref: "user", required: false },
+    owner: { type: Schema.Types.ObjectId, ref: "user" },
     category: { type: String, required: true },
     img: { type: String },
     menu: { type: Schema.Types.ObjectId, ref: "menu" },
