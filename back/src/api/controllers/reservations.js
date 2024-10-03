@@ -85,7 +85,7 @@ const getReservationsByRestaurant = async (req, res, next) => {
 const cancelReservation = async (req, res, next) => {
   try {
     const reserveId = req.params.id;
-    const user = req.params.id;
+    const user = req.user.id;
 
     const reservation = await Reservation.findOne({ _id: reserveId, user });
     if (!reservation) {
@@ -93,7 +93,7 @@ const cancelReservation = async (req, res, next) => {
         .status(404)
         .json("Booking not found or you do not have permission to cancel it");
     }
-    reservation.state = "canceled";
+    reservation.state = "cancelled";
     await reservation.save();
     return res
       .status(200)
