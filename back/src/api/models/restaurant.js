@@ -16,6 +16,9 @@ const restaurantSchema = new Schema(
     average_rating: { type: Number, min: 0, max: 5, default: 0 },
     rating_number: { type: Number, default: 0 },
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "comment" }],
+    reservations: [
+      { type: mongoose.Schema.Types.ObjectId, ref: "reservation" },
+    ],
   },
   {
     collection: "restaurants",
