@@ -24,8 +24,6 @@ const createComments = async (req, res, next) => {
     const { restaurant } = req.body;
     const { text, rating } = req.body;
     const user = req.user._id;
-    console.log("ID del restaurante:", restaurant);
-    console.log("Datos recibidos:", { text, rating, user });
 
     if (rating < 1 || rating > 5) {
       return res
