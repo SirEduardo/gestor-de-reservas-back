@@ -25,8 +25,14 @@ const userSchema = new Schema(
   }
 );
 
-userSchema.pre("save", function (next) {
-  this.password = bcrypt.hashSync(this.password, 10);
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    try {
+      this.password = await bcrypt.hash(this.password, 10);
+    } catch (error) {
+      return next(error);
+    }
+  }
   next();
 });
 
