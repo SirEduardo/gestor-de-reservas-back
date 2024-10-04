@@ -3,18 +3,18 @@ const {
   getReservationByUser,
   getReservationsByRestaurant,
   createReservation,
-  cancelReservation,
+  ReservationState,
 } = require("../controllers/reservations");
 
 const reservationRoutes = require("express").Router();
 
-reservationRoutes.get("/my-reservation", [isAuth], getReservationByUser);
+reservationRoutes.get("/my-reservation", getReservationByUser);
 reservationRoutes.get(
   "/restaurant/:restaurantId",
   [isAuth],
   getReservationsByRestaurant
 );
 reservationRoutes.post("/:id", [isAuth], createReservation);
-reservationRoutes.put("/:id/cancel", [isAuth], cancelReservation);
+reservationRoutes.put("/:id/state", [isAuth], ReservationState);
 
 module.exports = reservationRoutes;
