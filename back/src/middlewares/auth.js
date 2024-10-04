@@ -7,8 +7,8 @@ const isAuth = async (req, res, next) => {
     if (!token) {
       return res.status(401).json({ message: "Token not provided" });
     }
-    const parsedtoken = token.replace("Bearer ", "");
-    const decodedtoken = verifyToken(parsedtoken);
+
+    const decodedtoken = verifyToken(token);
 
     if (!decodedtoken || !decodedtoken.id) {
       return res.status(401).json({ message: "Invalid token" });
