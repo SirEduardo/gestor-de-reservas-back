@@ -44,13 +44,9 @@ const loginUser = async (req, res, next) => {
     if (!user) {
       return res.status(404).json("User not found");
     }
-    console.log("User found:", user);
-    console.log("Password from user:", user.password);
-    console.log("Password entered:", password);
 
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("Comparing passwords...");
-    console.log("Password match result:", isMatch);
+
     if (isMatch) {
       const token = generateToken(user._id);
       const { password, ...userWithoutPassword } = user._doc;
