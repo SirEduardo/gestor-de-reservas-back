@@ -8,7 +8,7 @@ const {
 
 const reservationRoutes = require("express").Router();
 
-reservationRoutes.get("/my-reservation", getReservationByUser);
+reservationRoutes.get("/my-reservation", [isAuth], getReservationByUser);
 reservationRoutes.get(
   "/restaurant/:restaurantId",
   [isAuth],
