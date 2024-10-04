@@ -21,7 +21,7 @@ const registerUser = async (req, res, next) => {
       password,
       role,
     });
-    const userExist = await User.findOne({ email: req.body.email });
+    const userExist = await User.findOne({ email });
     if (userExist) {
       return res.status(409).json("This user already exists");
     }
@@ -37,18 +37,25 @@ const registerUser = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
+  const { password, email } = req.body;
   try {
-    const user = await User.findOne({ email: req.body.email }).populate(
-      "restaurant"
-    );
+    const user = await User.findOne({ email }).populate("restaurant");
     if (!user) {
       return res.status(404).json("User not found");
     }
-    const isMatch = await bcrypt.compare(req.body.password, user.password);
+    console.log("User found:", user);
+    console.log("Password from user:", user.password);
+    console.log("Password entered:", password);
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log("Comparing passwords...");
+    console.log("Password match result:", isMatch);
     if (isMatch) {
       const token = generateToken(user._id);
-      return res.status(200).json({ user, token });
+      const { password, ...userWithoutPassword } = user._doc;
+      return res.status(200).json({ user: userWithoutPassword, token });
     }
+
     return res.status(400).json("Incorrect username or password");
   } catch (error) {
     return res.status(400).json("Error when login");
