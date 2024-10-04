@@ -66,7 +66,7 @@ const getReservationsByRestaurant = async (req, res, next) => {
 
     const reservations = await Reservation.find({
       restaurant: restaurantId,
-    }).populate("user", "userName email");
+    }).populate("user", "userName lastName");
     console.log("Reservations:", reservations);
 
     if (!reservations || reservations.length === 0) {
