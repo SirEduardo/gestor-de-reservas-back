@@ -50,12 +50,13 @@ const getRestaurantByName = async (req, res, next) => {
 
 const createRestaurant = async (req, res, next) => {
   try {
-    const { name, location, owner, category, telephone, opening, closing } =
+    const { name, location, user, category, telephone, opening, closing } =
       req.body;
+
     if (
       !name ||
       !location ||
-      !owner ||
+      !user ||
       !category ||
       !telephone ||
       !opening ||
@@ -67,14 +68,14 @@ const createRestaurant = async (req, res, next) => {
       return res.status(400).json({ message: "Image is required" });
     }
     const img = req.file.path;
-    const user = await User.findById(owner);
-    if (!user) {
-      return res.status(404).json("owner not found");
+    const userInfo = await User.findById(user);
+    if (!userInfo) {
+      return res.status(404).json("Owner not found");
     }
     const newRestaurant = new Restaurant({
       name,
       location,
-      owner,
+      user,
       category,
       img,
       telephone,
@@ -82,8 +83,8 @@ const createRestaurant = async (req, res, next) => {
       closing,
     });
     const restaurantSaved = await newRestaurant.save();
-    user.restaurant.push(restaurantSaved._id);
-    await user.save();
+    userInfo.restaurant.push(restaurantSaved._id);
+    await userInfo.save();
 
     return res.status(201).json({
       message: "Successfully created restaurant",
