@@ -6,7 +6,7 @@ const getComments = async (req, res, next) => {
     const { id } = req.params;
     const comments = await Comment.find({ restaurant: id }).populate(
       "user",
-      "userName"
+      "userName lastName"
     );
     if (comments.length === 0) {
       return res
