@@ -13,10 +13,11 @@ const getUser = async (req, res, next) => {
 };
 
 const registerUser = async (req, res, next) => {
-  const { userName, email, password, role } = req.body;
+  const { userName, lastName, email, password, role } = req.body;
   try {
     const newUser = new User({
       userName,
+      lastName,
       email,
       password,
       role,
