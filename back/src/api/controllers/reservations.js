@@ -6,9 +6,8 @@ const createReservation = async (req, res, next) => {
   try {
     const { restaurant, booking_date, time, n_persons } = req.body;
     const user = req.user.id;
-    console.log(user);
 
-    if ((restaurant, !booking_date, !time, !n_persons)) {
+    if ((!restaurant, !booking_date, !time, !n_persons)) {
       return res.status(400).json("All fields are required");
     }
     const restaurantDoc = await Restaurant.findById(restaurant);
@@ -60,44 +59,41 @@ const getReservationByUser = async (req, res, next) => {
 const getReservationsByRestaurant = async (req, res, next) => {
   try {
     const restaurantId = req.params.restaurantId;
-    const user = req.user.id;
+    console.log("Restaurant ID:", restaurantId);
 
-    const restaurant = await Restaurant.findOne({
-      _id: restaurantId,
-      owner: user,
-    });
-    if (!restaurant) {
-      return res
-        .status(403)
-        .json(
-          "You do not have permission to view this restaurant's reservations"
-        );
-    }
+    const restaurant = await Restaurant.findOne({ _id: restaurantId });
+    console.log("Restaurant:", restaurant);
+
     const reservations = await Reservation.find({
       restaurant: restaurantId,
-    }).populate("users", "userName email");
+    }).populate("user", "userName email");
+    console.log("Reservations:", reservations);
+
+    if (!reservations || reservations.length === 0) {
+      return res.status(404).json("Reservations not found");
+    }
+
     return res.status(200).json({ reservations });
   } catch (error) {
+    console.error("Error in fetching reservations:", error);
     return res.status(500).json("Server error");
   }
 };
 
-const cancelReservation = async (req, res, next) => {
+const ReservationState = async (req, res, next) => {
   try {
     const reserveId = req.params.id;
-    const user = req.user.id;
 
-    const reservation = await Reservation.findOne({ _id: reserveId, user });
+    const reservation = await Reservation.findOne({ _id: reserveId });
     if (!reservation) {
-      return res
-        .status(404)
-        .json("Booking not found or you do not have permission to cancel it");
+      return res.status(404).json({ message: "Reservation not found" });
     }
-    reservation.state = "cancelled";
+    const { state } = req.body;
+    reservation.state = state;
     await reservation.save();
     return res
       .status(200)
-      .json({ message: "Reservation successfully cancelled", reservation });
+      .json({ message: `Reservation successfully ${state}`, reservation });
   } catch (error) {
     return res.status(500).json("Server error");
   }
@@ -107,5 +103,5 @@ module.exports = {
   getReservationByUser,
   getReservationsByRestaurant,
   createReservation,
-  cancelReservation,
+  ReservationState,
 };
