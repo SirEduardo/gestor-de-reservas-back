@@ -45,8 +45,8 @@ const createReservation = async (req, res, next) => {
 
 const getReservationByUser = async (req, res, next) => {
   try {
-    const user = req.user.id;
-    const reserve = await Reservation.find({ user }).populate(
+    const user = req.user;
+    const reserve = await Reservation.find({ id_: user }).populate(
       "restaurant",
       "name location"
     );
