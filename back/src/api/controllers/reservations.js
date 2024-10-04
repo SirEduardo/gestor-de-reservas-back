@@ -5,14 +5,18 @@ const User = require("../models/users");
 const createReservation = async (req, res, next) => {
   try {
     const { restaurant, booking_date, time, n_persons } = req.body;
-    const user = req.user;
+    const user = req.user.id;
 
-    if ((!restaurant, !booking_date, !time, !n_persons)) {
+    if (!restaurant || !booking_date || !time || !n_persons) {
       return res.status(400).json("All fields are required");
     }
     const restaurantDoc = await Restaurant.findById(restaurant);
     if (!restaurantDoc) {
       return res.status(400).json("This restaurant does not exist");
+    }
+    const userDoc = await User.findById(user);
+    if (!userDoc) {
+      return res.status(404).json("User not found");
     }
 
     const newReservation = new Reservation({
@@ -26,10 +30,10 @@ const createReservation = async (req, res, next) => {
 
     const reservationSaved = await newReservation.save();
 
-    user.reservations.push(reservationSaved._id);
+    userDoc.reservations.push(reservationSaved._id);
     restaurantDoc.reservations.push(reservationSaved._id);
 
-    await user.save();
+    await userDoc.save();
     await restaurantDoc.save();
     return res.status(200).json({
       message: "Reserve successfully created",
@@ -37,7 +41,7 @@ const createReservation = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error creating reservation:", error);
-    return res.status(400).json(500).json({ message: "Server error" });
+    return res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -62,15 +66,12 @@ const getReservationByUser = async (req, res, next) => {
 const getReservationsByRestaurant = async (req, res, next) => {
   try {
     const restaurantId = req.params.restaurantId;
-    console.log("Restaurant ID:", restaurantId);
 
-    const restaurant = await Restaurant.findOne({ _id: restaurantId });
-    console.log("Restaurant:", restaurant);
+    await Restaurant.findOne({ _id: restaurantId });
 
     const reservations = await Reservation.find({
       restaurant: restaurantId,
     }).populate("user", "userName lastName");
-    console.log("Reservations:", reservations);
 
     if (!reservations || reservations.length === 0) {
       return res.status(404).json("Reservations not found");
