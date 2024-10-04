@@ -5,7 +5,7 @@ const User = require("../models/users");
 const createReservation = async (req, res, next) => {
   try {
     const { restaurant, booking_date, time, n_persons } = req.body;
-    const user = req.user.id;
+    const user = req.user;
 
     if ((!restaurant, !booking_date, !time, !n_persons)) {
       return res.status(400).json("All fields are required");
@@ -14,10 +14,7 @@ const createReservation = async (req, res, next) => {
     if (!restaurantDoc) {
       return res.status(400).json("This restaurant does not exist");
     }
-    const userInfo = await User.findById(user);
-    if (!userInfo) {
-      return res.status(404).json({ message: "User not found" });
-    }
+
     const newReservation = new Reservation({
       user,
       restaurant,
@@ -29,29 +26,35 @@ const createReservation = async (req, res, next) => {
 
     const reservationSaved = await newReservation.save();
 
-    userInfo.reservations.push(reservationSaved._id);
+    user.reservations.push(reservationSaved._id);
     restaurantDoc.reservations.push(reservationSaved._id);
 
-    await userInfo.save();
+    await user.save();
     await restaurantDoc.save();
     return res.status(200).json({
       message: "Reserve successfully created",
       reservationSaved,
     });
   } catch (error) {
-    return res.status(400).json(500).json("Server error");
+    console.error("Error creating reservation:", error);
+    return res.status(400).json(500).json({ message: "Server error" });
   }
 };
 
 const getReservationByUser = async (req, res, next) => {
   try {
-    const user = req.user;
-    const reserve = await Reservation.find({ id_: user }).populate(
+    const userId = req.user.id;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    const reserve = await Reservation.find({ user: userId }).populate(
       "restaurant",
       "name location"
     );
     return res.status(200).json({ reserve });
   } catch (error) {
+    console.error("Error fetching reservations:", error);
     return res.status(500).json("Server error");
   }
 };
