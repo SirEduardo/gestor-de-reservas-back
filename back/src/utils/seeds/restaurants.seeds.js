@@ -24,17 +24,8 @@ const readAndInsertRestaurants = async () => {
         continue;
       }
 
-      const [
-        id,
-        name,
-        location,
-        owner,
-        category,
-        img,
-        telephone,
-        opening,
-        closing,
-      ] = columns;
+      const [name, location, category, img, telephone, opening, closing] =
+        columns;
       if (
         !name ||
         !location ||
