@@ -66,18 +66,16 @@ const getReservationByUser = async (req, res, next) => {
 const getReservationsByRestaurant = async (req, res, next) => {
   try {
     const restaurantId = req.params.restaurantId;
-
-    await Restaurant.findOne({ _id: restaurantId });
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) {
+      return res.status(404).json("Restaurant not found");
+    }
 
     const reservations = await Reservation.find({
       restaurant: restaurantId,
     }).populate("user", "userName lastName");
 
-    if (!reservations || reservations.length === 0) {
-      return res.status(404).json("Reservations not found");
-    }
-
-    return res.status(200).json({ reservations });
+    return res.status(200).json({ reservations: reservations || [] });
   } catch (error) {
     console.error("Error in fetching reservations:", error);
     return res.status(500).json("Server error");
