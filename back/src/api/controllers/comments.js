@@ -8,12 +8,7 @@ const getComments = async (req, res, next) => {
       "user",
       "userName lastName"
     );
-    if (comments.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No comments found for this restaurant" });
-    }
-    return res.status(200).json(comments);
+    return res.status(200).json({ comments: comments || [] });
   } catch (error) {
     return res.status(404).json("Comments not found");
   }
