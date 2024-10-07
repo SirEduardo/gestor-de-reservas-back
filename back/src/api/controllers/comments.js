@@ -61,17 +61,26 @@ const createComments = async (req, res, next) => {
 const deleteComments = async (req, res, next) => {
   try {
     const commentId = req.params.id;
-    const user = req.params.id;
+    const userId = req.user.id;
 
-    const comment = await Comment.findOne({ _id, commentId, user });
+    const comment = await Comment.findOne({ _id: commentId });
     if (!comment) {
       return res.status(404).json({
-        message: "Commnet not found or you do not have permission to delete it",
+        message: "Commnet not found",
       });
     }
-    const commentDeleted = await comment.findByIdAndDelete(commentId);
-    return res.status(200).json(commentDeleted);
-  } catch (error) {}
+    if (comment.user.toString() !== userId) {
+      return res.status(403).json({
+        message: "You do not have the permissions to delete this comment",
+      });
+    }
+    await Comment.findByIdAndDelete(commentId);
+    return res.status(200).json({ message: "Comment deleted successfuly" });
+  } catch (error) {
+    return res.status(500).json({
+      message: "An error occurred while trying to delete the comment",
+    });
+  }
 };
 
 module.exports = { getComments, createComments, deleteComments };
