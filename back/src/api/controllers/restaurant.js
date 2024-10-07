@@ -99,30 +99,35 @@ const createRestaurant = async (req, res, next) => {
 
 const deleteRestaurant = async (req, res, next) => {
   try {
-    if (!req.user || req.user.id) {
-      return res.status(400).json("User not verified");
-    }
     const { id } = req.params;
-    const userId = req.user.id;
 
     const restaurant = await Restaurant.findById(id);
     if (!restaurant) {
       return res.status(400).json("Restaurant not found");
     }
-    if (restaurant.owner !== userId) {
-      return res
-        .status(400)
-        .json("User not authorized to delet this restaurant");
+
+    const userId = restaurant.user;
+    const user = await User.findById(userId);
+
+    const deletedRestaurant = await Restaurant.findByIdAndDelete(restaurant);
+    if (!deletedRestaurant) {
+      return res.status(404).json({ message: "Failed to find restaurant" });
     }
-    const deletedRestaurant = await Restaurant.findByIdAndDelete(id);
-    deleteFiles(deletedRestaurant.img);
+
+    if (deletedRestaurant.img) {
+      deleteFiles(deletedRestaurant.img);
+    }
+    user.restaurant = user.restaurant.filter(
+      (restaurantId) => restaurantId.toString() !== id
+    );
+    await user.save();
     return res.status(200).json({
       message: "Restaurant deleted",
       deletedRestaurant: deletedRestaurant,
     });
   } catch (error) {
     return res
-      .sttus(500)
+      .status(500)
       .json({ message: "Failed trying to delete restaurant", error });
   }
 };
