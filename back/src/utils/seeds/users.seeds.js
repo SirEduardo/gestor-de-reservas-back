@@ -5,9 +5,7 @@ const bcrypt = require("bcrypt");
 
 const readAndInsertUsers = async () => {
   try {
-    await mongoose.connect(
-      "mongodb+srv://eduardosaanchezlopez:ogBV5Vm0RqNIpSve@gestion-de-reservas.gdlcc.mongodb.net/?retryWrites=true&w=majority&appName=gestion-de-reservas"
-    );
+    await mongoose.connect(process.env.DB_URL);
 
     const data = fs.readFileSync(__dirname + "/users.csv", "utf-8");
     const rows = data.split("\r\n");
